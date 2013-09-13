@@ -1,0 +1,51 @@
+﻿@model Blitzboule_Web.Models.User
+
+@{
+    ViewBag.Title = "Blitzboule: Sign in";
+}
+
+<div class="container" style="padding-top:40px;">
+    <div class="row">
+        
+        <!-- Sign in -->
+        <div class="col-xs-12 col-sm-6 col-md-20">
+            <div class="jumbotron">
+                <div class="container">
+                    
+                    <h2>Member ?</h2>
+                    
+                    @using(Html.BeginForm("SignIn", "User", FormMethod.Post))
+                    {
+                        @Html.TextBoxFor(model => model.Login, new { @Placeholder = "Username", @Style = "width: 100%" })
+                        @Html.PasswordFor(model => model.Password, new { @Placeholder = "Password", @Style = "width: 100%" })
+
+                        <input type="submit" value="Sign in" class="btn btn-primary btn-lg" style="margin-top: 30px" />
+                    }
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign up -->
+        <div class="col-xs-12 col-sm-6 col-md-20">
+            <div class="jumbotron">
+                <div class="container">
+                    
+                    <h2>New player ?</h2>
+                    
+                    @using(Html.BeginForm("SignUp", "User", FormMethod.Post))
+                    {
+                        @Html.TextBoxFor(model => model.Email, new { @Placeholder = "Email", @Style = "width: 100%" })
+                        @Html.TextBoxFor(model => model.Login, new { @Placeholder = "Username", @Style = "width: 100%" })
+                        @Html.PasswordFor(model => model.Password, new { @Placeholder = "Password", @Style = "width: 100%" })
+                        @Html.Password("passwordCheck", null, new { @Placeholder = "Password check", @Style = "width: 100%" })
+
+                        <input type="submit" value="Sign up" class="btn btn-primary btn-lg" style="margin-top: 30px" />
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
