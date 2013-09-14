@@ -1,4 +1,5 @@
 ﻿using Blitzboule_Web.Models;
+using Blitzboule_Web.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,20 @@ namespace Blitzboule_Web.Controllers
         {
             try
             {
-                return RedirectToAction("Index", "Home");
+                user = UserRepository.GetByLoginAndPassword(user.Login, user.Password);
+
+                if (user == null)
+                {
+                    return RedirectToAction("Index", "Home", new { error = "Incorrect identification" });
+                }
+
+                Session["user"] = user;
+
+                return RedirectToAction("Index", "Team");
             }
             catch
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home", new { error = "An error occured" });
             }
         }
 

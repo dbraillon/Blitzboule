@@ -16,9 +16,20 @@
                     
                     @using(Html.BeginForm("SignIn", "User", FormMethod.Post))
                     {
-                        @Html.TextBoxFor(model => model.Login, new { @Placeholder = "Username", @Style = "width: 100%" })
-                        @Html.PasswordFor(model => model.Password, new { @Placeholder = "Password", @Style = "width: 100%" })
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
 
+                        if (ViewBag.Error != "")
+                        {
+                            <span class="label label-danger">@ViewBag.Error</span>
+                        }
+                        
+                        @Html.TextBoxFor(model => model.Login, new { @Placeholder = "Username", @Style = "width: 100%" })
+                        @Html.ValidationMessageFor(model => model.Login)
+                            
+                        @Html.PasswordFor(model => model.Password, new { @Placeholder = "Password", @Style = "width: 100%" })
+                        @Html.ValidationMessageFor(model => model.Password)
+                        
                         <input type="submit" value="Sign in" class="btn btn-primary btn-lg" style="margin-top: 30px" />
                     }
                     
