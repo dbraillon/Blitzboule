@@ -1,4 +1,5 @@
-﻿using Blitzboule_Web.Models;
+﻿using Blitzboule_Web.Filters;
+using Blitzboule_Web.Models;
 using Blitzboule_Web.Repositories;
 using System;
 using System.Collections.Generic;
@@ -13,39 +14,43 @@ namespace Blitzboule_Web.Controllers
         [HttpPost]
         public ActionResult SignIn(User user)
         {
-            try
-            {
-                user = UserRepository.GetByLoginAndPassword(user.Login, user.Password);
+            /// Check if an user have a match with this login and password, if not redirect
+            if ((user = UserRepository.GetByLoginAndPassword(user.Login, user.Password)) == null)
+                return RedirectToAction("Index", "Home");
 
-                if (user == null)
-                {
-                    return RedirectToAction("Index", "Home", new { error = "Incorrect identification" });
-                }
+            /// Set the user in Session
+            SessionManager.SetUser(user);
 
-                Session["user"] = user;
-
-                return RedirectToAction("Index", "Team");
-            }
-            catch
-            {
-                return RedirectToAction("Index", "Home", new { error = "An error occured" });
-            }
+            /// Redirect to Team Index
+            return RedirectToAction("Index", "Team");
         }
 
         [HttpPost]
         public ActionResult SignUp(FormCollection collection, User user)
         {
-            try
+            /// Check if the model state is valide and
+            /// if both password fields match, if not redirect
+            if (!ModelState.IsValid || user.Password != collection["passwordCheck"])
             {
-                if(user.Password != collection["passwordCheck"])
-                    return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home");
+            }
 
-                return RedirectToAction("Index", "Home");
-            }
-            catch
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            /// Add role and status to users and insert in database
+            user.Role = UserRole.User;
+            user.Status = UserStatus.WithoutTeam;
+            UserRepository.Insert(user);
+
+            /// Set the user in Session
+            SessionManager.SetUser(user);
+
+            /// Inform user that sign up succed
+            return RedirectToAction("SignUpSuccess");
+        }
+
+        [Authorization(UserRole.User)]
+        public ActionResult SignUpSuccess()
+        {
+            return View();
         }
     }
 }

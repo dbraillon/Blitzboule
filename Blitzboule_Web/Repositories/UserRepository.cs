@@ -34,9 +34,12 @@ namespace Blitzboule_Web.Repositories
                             user = new User()
                             {
                                 Id = reader.GetInt32("id"),
+                                TeamId = reader.GetInt32("teamId"),
                                 Email = reader.GetString("email"),
                                 Login = reader.GetString("login"),
-                                Password = reader.GetString("password")
+                                Password = reader.GetString("password"),
+                                Role = User.StringToUserRole(reader.GetString("role")),
+                                Status = User.StringToUserStatus(reader.GetString("status"))
                             };
                         }
                     }
@@ -44,6 +47,29 @@ namespace Blitzboule_Web.Repositories
             }
 
             return user;
+        }
+
+        public static void Insert(User user)
+        {
+            using (BlitzbouleProvider provider = new BlitzbouleProvider())
+            {
+                string cmdText =
+                    "INSERT INTO `users` (`email`, `login`, `password`, `role`, `status`) " +
+                    "VALUES (@Email, @Login, @Password, @Role, @Status) ";
+
+                using (MySqlCommand command = new MySqlCommand(cmdText, provider.GetConnection()))
+                {
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@Login", user.Login);
+                    command.Parameters.AddWithValue("@Password", user.Password);
+                    command.Parameters.AddWithValue("@Role", User.UserRoleToString(user.Role));
+                    command.Parameters.AddWithValue("@Status", User.UserStatusToString(user.Status));
+
+                    command.ExecuteNonQuery();
+
+                    user.Id = (int)command.LastInsertedId;
+                }
+            }
         }
     }
 }

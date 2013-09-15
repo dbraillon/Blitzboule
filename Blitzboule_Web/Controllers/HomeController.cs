@@ -8,10 +8,8 @@ namespace Blitzboule_Web.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index(string error = "")
+        public ActionResult Index()
         {
-            ViewBag.Error = error;
-
             return View();
         }
     }

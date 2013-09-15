@@ -11,26 +11,29 @@ namespace Blitzboule_Web.Controllers
 {
     public class TeamController : Controller
     {
-        [Blitzboule(UserRole.User)]
+        [Authorization(UserRole.User)]
         public ActionResult Index()
         {
-            if (Session["user"] == null)
+            /// Get the user in Session
+            User user = SessionManager.GetUser();
+
+            /// Check user status
+            if (user.Status == UserStatus.WithoutTeam)
+                return RedirectToAction("Create");
+            
+            /// Get the user team and redirect if there's
+            /// no team corresponding to this user
+            if ((user.Team = TeamRepository.GetByUser(user)) == null)
             {
-                RedirectToAction("Index", "Home");
+                return RedirectToAction("Create");
             }
 
-            User user = Session["user"] as User;
-            user.Team = TeamRepository.GetByUser(user);
-
-            if (user.Team == null)
-            {
-                RedirectToAction("Create");
-            }
-
+            /// If the user has a team go to the Index view
             return View();
         }
 
-        [Blitzboule(UserRole.User)]
+        [Authorization(UserRole.User)]
+        [Status(UserStatus.WithoutTeam)]
         public ActionResult Create()
         {
             return View();

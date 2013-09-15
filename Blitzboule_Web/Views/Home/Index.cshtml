@@ -18,17 +18,9 @@
                     {
                         @Html.AntiForgeryToken()
                         @Html.ValidationSummary(true)
-
-                        if (ViewBag.Error != "")
-                        {
-                            <span class="label label-danger">@ViewBag.Error</span>
-                        }
                         
                         @Html.TextBoxFor(model => model.Login, new { @Placeholder = "Username", @Style = "width: 100%" })
-                        @Html.ValidationMessageFor(model => model.Login)
-                            
                         @Html.PasswordFor(model => model.Password, new { @Placeholder = "Password", @Style = "width: 100%" })
-                        @Html.ValidationMessageFor(model => model.Password)
                         
                         <input type="submit" value="Sign in" class="btn btn-primary btn-lg" style="margin-top: 30px" />
                     }
@@ -46,9 +38,18 @@
                     
                     @using(Html.BeginForm("SignUp", "User", FormMethod.Post))
                     {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        
                         @Html.TextBoxFor(model => model.Email, new { @Placeholder = "Email", @Style = "width: 100%" })
+                        @Html.ValidationMessageFor(model => model.Email, null, new { @Class = "label label-warning" })
+
                         @Html.TextBoxFor(model => model.Login, new { @Placeholder = "Username", @Style = "width: 100%" })
+                        @Html.ValidationMessageFor(model => model.Login, null, new { @Class = "label label-warning" })
+
                         @Html.PasswordFor(model => model.Password, new { @Placeholder = "Password", @Style = "width: 100%" })
+                        @Html.ValidationMessageFor(model => model.Password, null, new { @Class = "label label-warning" })
+
                         @Html.Password("passwordCheck", null, new { @Placeholder = "Password check", @Style = "width: 100%" })
 
                         <input type="submit" value="Sign up" class="btn btn-primary btn-lg" style="margin-top: 30px" />
@@ -60,3 +61,7 @@
 
     </div>
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

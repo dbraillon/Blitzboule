@@ -7,32 +7,33 @@ using System.Web.Mvc;
 
 namespace Blitzboule_Web.Filters
 {
-    public class BlitzbouleAttribute : AuthorizeAttribute
+    public class AuthorizationAttribute : AuthorizeAttribute
     {
+        private const string redirectUnauthorized = "/";
         private readonly UserRole[] acceptedRoles;
-
-        public BlitzbouleAttribute(params UserRole[] acceptedRoles)
+        
+        public AuthorizationAttribute(params UserRole[] acceptedRoles)
         {
             this.acceptedRoles = acceptedRoles;
         }
 
+
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            User user = Session.GetUser();
+            User user = SessionManager.GetUser();
 
             if (user == null)
             {
+                httpContext.Response.Redirect(redirectUnauthorized);
                 return false;
             }
 
-            foreach (UserRole role in acceptedRoles)
+            if (acceptedRoles.Contains(user.Role))
             {
-                if (role == user.Role)
-                {
-                    return true;
-                }
+                return true;
             }
 
+            httpContext.Response.Redirect(redirectUnauthorized);
             return false;
         }
     }
