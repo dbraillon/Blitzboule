@@ -34,13 +34,14 @@ namespace Blitzboule_Web.Repositories
                             user = new User()
                             {
                                 Id = reader.GetInt32("id"),
-                                TeamId = reader.GetInt32("teamId"),
                                 Email = reader.GetString("email"),
                                 Login = reader.GetString("login"),
                                 Password = reader.GetString("password"),
-                                Role = User.StringToUserRole(reader.GetString("role")),
-                                Status = User.StringToUserStatus(reader.GetString("status"))
+                                Role = (UserRole)reader.GetInt32("role"),
+                                Status = (UserStatus)reader.GetInt32("status")
                             };
+
+                            user.TeamId = (reader["teamId"] == System.DBNull.Value) ? 0 : reader.GetInt32("teamId");
                         }
                     }
                 }
@@ -62,12 +63,36 @@ namespace Blitzboule_Web.Repositories
                     command.Parameters.AddWithValue("@Email", user.Email);
                     command.Parameters.AddWithValue("@Login", user.Login);
                     command.Parameters.AddWithValue("@Password", user.Password);
-                    command.Parameters.AddWithValue("@Role", User.UserRoleToString(user.Role));
-                    command.Parameters.AddWithValue("@Status", User.UserStatusToString(user.Status));
+                    command.Parameters.AddWithValue("@Role", (int)user.Role);
+                    command.Parameters.AddWithValue("@Status", (int)user.Status);
 
                     command.ExecuteNonQuery();
 
                     user.Id = (int)command.LastInsertedId;
+                }
+            }
+        }
+
+        public static void Update(User user)
+        {
+            using (BlitzbouleProvider provider = new BlitzbouleProvider())
+            {
+                string cmdText =
+                    "UPDATE `users` " +
+                    "SET `teamId` = @TeamId, `email` = @Email, `login` = @Login, `password` = @Password, `role` = @Role, `status` = @Status " +
+                    "WHERE `id` = @Id ";
+
+                using (MySqlCommand command = new MySqlCommand(cmdText, provider.GetConnection()))
+                {
+                    command.Parameters.AddWithValue("@Id", user.Id);
+                    command.Parameters.AddWithValue("@TeamId", user.TeamId);
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@Login", user.Login);
+                    command.Parameters.AddWithValue("@Password", user.Password);
+                    command.Parameters.AddWithValue("@Role", (int)user.Role);
+                    command.Parameters.AddWithValue("@Status", (int)user.Status);
+
+                    command.ExecuteNonQuery();
                 }
             }
         }
