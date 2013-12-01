@@ -13,25 +13,6 @@ namespace Blitzboule_Web.Controllers
     public class TeamController : Controller
     {
         [Authorization(UserRole.User)]
-        public ActionResult Index()
-        {
-            /// Get the user in Session
-            User user = SessionManager.GetUser();
-
-            /// Get the user team and redirect if there's
-            /// no team corresponding to this user
-            if ((user.Team = TeamRepository.ReadByUser(user)) == null)
-            {
-                user.Status = UserStatus.WithoutTeam;
-
-                return RedirectToAction("Create");
-            }
-
-            /// If the user has a team go to the Index view
-            return View();
-        }
-
-        [Authorization(UserRole.User)]
         [Status(UserStatus.WithoutTeam)]
         public ActionResult Create()
         {

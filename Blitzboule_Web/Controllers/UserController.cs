@@ -22,7 +22,7 @@ namespace Blitzboule_Web.Controllers
             SessionManager.SetUser(user);
 
             /// Redirect to Team Index
-            return RedirectToAction("Index", "Team");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -51,6 +51,25 @@ namespace Blitzboule_Web.Controllers
         public ActionResult SignUpSuccess()
         {
             return View();
+        }
+
+        [Authorization(UserRole.User)]
+        public ActionResult Index()
+        {
+            /// Get the user in Session
+            User user = SessionManager.GetUser();
+
+            /// Get the user team and redirect if there's
+            /// no team corresponding to this user
+            if ((user.Team = TeamRepository.ReadByUser(user)) == null)
+            {
+                user.Status = UserStatus.WithoutTeam;
+
+                return RedirectToAction("Create", "Team");
+            }
+
+            /// If the user has a team go to the Index view
+            return View(user);
         }
     }
 }

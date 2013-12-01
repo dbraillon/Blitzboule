@@ -242,7 +242,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\User\SignUpSuccess.cshtml" />
     <Content Include="Views\Team\Create.cshtml" />
-    <Content Include="Views\Team\Index.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
